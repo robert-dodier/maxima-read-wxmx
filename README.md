@@ -252,22 +252,29 @@ print(bcd);
 [eqn:x^2+17*x+29 = 0,solve(eqn,x),subst(first(%),eqn),expand(%),
  abc:'(xyz+def),bcd:'(2*sin(x)),ev(bcd),print(bcd)]$
 (%i5) load_wxmx (my_wxmx);
-(%i6)                                2
+(%i6) eqn:x^2+17*x+29 = 0
+                               2
 (%o6)                         x  + 17 x + 29 = 0
-(%i7)                          sqrt(173) + 17      sqrt(173) - 17
+(%i7) solve(eqn,x)
+                         sqrt(173) + 17      sqrt(173) - 17
 (%o7)             [x = - --------------, x = --------------]
                                2                   2
-(%i8)                                2
+(%i8) subst(first(%),eqn)
+                               2
                (sqrt(173) + 17)    17 (sqrt(173) + 17)
 (%o8)          ----------------- - ------------------- + 29 = 0
                        4                    2
-(%i9) (%o9)                                0 = 0
-(%i10) (%o10)                             xyz + def
-(%i11) 
-(%i12) (%o12)                             2 sin(x)
-(%i13) 2 sin(x) 
+(%i9) expand(%)
+(%o9)                                0 = 0
+(%i10) abc:'(def+xyz)
+(%o10)                             xyz + def
+(%i11) bcd:'(sin(x)+sin(x))
+(%i12) ev(bcd)
+(%o12)                             2 sin(x)
+(%i13) print(bcd)
+2 sin(x) 
 (%o13)                             2 sin(x)
-(%i14) (%o14)                               done
-(%i15) 
+(%o13)                               false
+(%i14) 
 ```
 
