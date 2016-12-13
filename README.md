@@ -65,13 +65,28 @@ in a new session, I always get an error when it tries toad XMLS.
 I've found that if I just issue the same command again, it succeeds.
 Dunno what's up with that.
 
-With maxima-read-wxmx loaded, it should be possible to read wxmx files:
+With maxima-read-wxmx loaded, it should be possible to read wxmx files.
+Let's say the file is `foo1.wxmx` which is included in this package.
 
+Just print the content.xml which is contained in the wxmx:
 ```
-my_wxmx : "foo1.wxmx" $
 print (get_wxmx_content_xml (my_wxmx)) $
+```
+
+Read the Maxima input which is contained in content.xml:
+```
 print (read_content_xml (my_wxmx)) $
+```
+(The name of that function doesn't suggest its purpose very well;
+sorry about that.)
+
+Read the input and parse it into Maxima expressions:
+```
 grind (parse_content_xml (my_wxmx)) $
+```
+
+Read the input, parse it, and feed it into the Maxima interpreter:
+```
 load_wxmx (my_wxmx);
 ```
 
