@@ -21,7 +21,7 @@
 ;; IN is an input stream, as created by make_string_input_stream or whatever
 
 (defun $load_stream (in)
-  (catch 'macsyma-quit (continue in nil)))
+  (catch 'macsyma-quit (continue in t)))
 
 ;; returns a string containing the Maxima code from the content.xml entry in FILE-NAME-WXMX
 (defun $read_content_xml (file-name-wxmx)
@@ -31,7 +31,10 @@
 (defun $load_wxmx (file-name-wxmx)
   ($load_stream (make-string-input-stream ($read_content_xml file-name-wxmx))))
 
-(mfuncall '$slength "") ;; cause stringproc to be loaded ... <sigh>
 (defun $parse_content_xml (file-name-wxmx)
-  (let ((s (xmls:parse (make-string-input-stream (mfuncall '$get_wxmx_content_xml file-name-wxmx)))))
-    (cons '(mlist) (mapcar #'$parse_string (rest (mfuncall '$extract_input (xml-to-expr s)))))))
+  (declare (special *mread-prompt*))
+  (let*
+    ((content-string ($read_content_xml file-name-wxmx))
+     (input-stream (make-string-input-stream content-string))
+     (*mread-prompt*))
+    (cons '(mlist) (loop for x = (mread input-stream) while x collect (third x)))))
