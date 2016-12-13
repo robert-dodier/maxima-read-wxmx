@@ -1,0 +1,37 @@
+/* wxmx_parse_xml.mac -- parse xml extracted from .wxmx file
+ * copyright 2016 Robert Dodier
+ * I release this work under terms of the GNU General Public License
+ */
+
+/* extract lines of input assuming XMLS:PARSE yields something like:
+ *
+("wxMaximaDocument" (("zoom" "100") ("version" "1.1"))
+ ("cell" (("type" "text"))
+  ("editor" (("type" "text")) ("line" NIL "Here is some text which opens the discussion. I'll find out stuff later.")))
+ ("cell" (("type" "text"))
+  ("editor" (("type" "text")) ("line" NIL "More text here. I wonder if it makes a separate paragraph.")))
+ ("cell" (("type" "text")) ("editor" (("type" "text")) ("line" NIL "First formula. Something about random blurfage.")))
+ ("cell" (("type" "code")) ("input" NIL ("editor" (("type" "input")) ("line" NIL "eqn : x^2 + 17*x + 29 = 0;")))
+  ("output" NIL
+ *
+ */
+
+/* remove cells which do not have input */
+matchdeclare (cc, lambda ([e], not atom(e) and op(e) = 'cell and freeof ('input, e)));
+defrule (r1, cc, []);
+
+/* remove output */
+matchdeclare (oo, lambda ([e], not atom(e) and op(e) = 'output));
+defrule (r2, oo, []);
+
+/* transform all foo(bar(baz("quux"))) to [[["quux"]]] */
+matchdeclare (oo, lambda ([e], not atom(e) and not listp(e)));
+defrule (r3, oo, args (oo));
+
+/* apply rules and then flatten the result, which contains only input strings */
+extract_input (e) := flatten (apply1 (e, r1, r2, r3));
+
+/* concatenate strings, separating with newlines */
+slength(""); /* cause stringproc to be loaded to get newline ... <sigh> */
+join_lines (l) := apply (sconcat, join (l, makelist (newline, length (l))));
+
